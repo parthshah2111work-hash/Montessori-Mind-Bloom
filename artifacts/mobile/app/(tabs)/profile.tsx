@@ -1,0 +1,261 @@
+import { Ionicons } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
+import React, { useState } from "react";
+import {
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { useApp } from "@/context/AppContext";
+import { useColors } from "@/hooks/useColors";
+
+export default function ProfileScreen() {
+  const colors = useColors();
+  const insets = useSafeAreaInsets();
+  const { profile, updateProfile, completedActivityIds, masteredMilestones } = useApp();
+
+  const [name, setName] = useState(profile.name);
+  const [ageMonths, setAgeMonths] = useState(profile.birthMonth.toString());
+  const [parentNames, setParentNames] = useState(profile.parentNames);
+  const [editing, setEditing] = useState(false);
+
+  const topPad = Platform.OS === "web" ? 67 : insets.top;
+
+  const saveProfile = () => {
+    const months = parseInt(ageMonths);
+    if (isNaN(months) || months < 16 || months > 28) {
+      Alert.alert("Invalid age", "Please enter an age between 16 and 28 months.");
+      return;
+    }
+    if (Platform.OS !== "web") Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    updateProfile({ name, birthMonth: months, parentNames });
+    setEditing(false);
+  };
+
+  const phase =
+    profile.birthMonth <= 20
+      ? "The Explorer"
+      : profile.birthMonth <= 24
+      ? "The Communicator"
+      : "The Builder";
+
+  const stats = [
+    { label: "Activities Done", value: completedActivityIds.length, icon: "checkmark-circle", color: colors.primary },
+    { label: "Milestones Mastered", value: masteredMilestones.length, icon: "star", color: colors.cognitive },
+  ];
+
+  const coachNotes = [
+    "Your child does not require a 'perfect' parent — she requires a 'present' one.",
+    "15 minutes of uninterrupted, floor-level engagement is more developmentally significant than hours of supervised activity.",
+    "The 30-second rule: before intervening, wait. That moment of struggle is where the brain grows.",
+    "Talk-aloud parenting: narrate your life. 'I am peeling the orange. It feels bumpy and smells sweet.'",
+    "Mess is evidence of learning. Allow it.",
+    "Your phone-free presence is the greatest developmental stimulant in existence.",
+  ];
+
+  const todayNote = coachNotes[new Date().getDate() % coachNotes.length];
+
+  return (
+    <KeyboardAvoidingView
+      style={[styles.container, { backgroundColor: colors.background }]}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: Platform.OS === "web" ? 100 : insets.bottom + 100 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={[styles.heroArea, { paddingTop: topPad + 16, backgroundColor: colors.primary + "10" }]}>
+          <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
+            <Text style={styles.avatarText}>{profile.name.charAt(0)}</Text>
+          </View>
+          <Text style={[styles.childName, { color: colors.foreground }]}>{profile.name}</Text>
+          <Text style={[styles.childAge, { color: colors.mutedForeground }]}>
+            {profile.birthMonth} months · {phase}
+          </Text>
+          {profile.parentNames.length > 0 && (
+            <Text style={[styles.parents, { color: colors.mutedForeground }]}>
+              {profile.parentNames}
+            </Text>
+          )}
+        </View>
+
+        <View style={styles.content}>
+          <View style={styles.statsRow}>
+            {stats.map((s) => (
+              <View
+                key={s.label}
+                style={[styles.statCard, { backgroundColor: s.color + "12", borderColor: s.color + "25" }]}
+              >
+                <Ionicons name={s.icon as any} size={22} color={s.color} />
+                <Text style={[styles.statValue, { color: s.color }]}>{s.value}</Text>
+                <Text style={[styles.statLabel, { color: colors.mutedForeground }]}>{s.label}</Text>
+              </View>
+            ))}
+          </View>
+
+          <View style={[styles.coachCard, { backgroundColor: colors.accent + "15", borderColor: colors.accent + "30" }]}>
+            <View style={styles.coachHeader}>
+              <Ionicons name="sparkles" size={14} color={colors.accent} />
+              <Text style={[styles.coachLabel, { color: colors.accent }]}>Coach's Note Today</Text>
+            </View>
+            <Text style={[styles.coachNote, { color: colors.foreground }]}>
+              "{todayNote}"
+            </Text>
+          </View>
+
+          <View style={styles.sectionHeader}>
+            <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Profile</Text>
+            <Pressable
+              onPress={() => editing ? saveProfile() : setEditing(true)}
+              style={[styles.editButton, { backgroundColor: editing ? colors.primary : colors.secondary, borderColor: editing ? colors.primary : colors.border }]}
+            >
+              <Ionicons
+                name={editing ? "checkmark" : "pencil"}
+                size={14}
+                color={editing ? "#fff" : colors.mutedForeground}
+              />
+              <Text style={[styles.editButtonText, { color: editing ? "#fff" : colors.mutedForeground }]}>
+                {editing ? "Save" : "Edit"}
+              </Text>
+            </Pressable>
+          </View>
+
+          <View style={[styles.profileForm, { backgroundColor: colors.card, borderColor: colors.border }]}>
+            <View style={styles.formField}>
+              <Text style={[styles.fieldLabel, { color: colors.mutedForeground }]}>Child's Name</Text>
+              <TextInput
+                value={name}
+                onChangeText={setName}
+                editable={editing}
+                style={[
+                  styles.fieldInput,
+                  { color: colors.foreground, borderBottomColor: editing ? colors.primary : colors.border },
+                ]}
+                placeholderTextColor={colors.mutedForeground}
+              />
+            </View>
+
+            <View style={styles.formField}>
+              <Text style={[styles.fieldLabel, { color: colors.mutedForeground }]}>Age in Months</Text>
+              <TextInput
+                value={ageMonths}
+                onChangeText={setAgeMonths}
+                editable={editing}
+                keyboardType="number-pad"
+                style={[
+                  styles.fieldInput,
+                  { color: colors.foreground, borderBottomColor: editing ? colors.primary : colors.border },
+                ]}
+              />
+            </View>
+
+            <View style={[styles.formField, { borderBottomWidth: 0 }]}>
+              <Text style={[styles.fieldLabel, { color: colors.mutedForeground }]}>Parents</Text>
+              <TextInput
+                value={parentNames}
+                onChangeText={setParentNames}
+                editable={editing}
+                style={[
+                  styles.fieldInput,
+                  { color: colors.foreground, borderBottomColor: editing ? colors.primary : colors.border },
+                ]}
+              />
+            </View>
+          </View>
+
+          <View style={[styles.infoCard, { backgroundColor: colors.secondary, borderColor: colors.border }]}>
+            <Ionicons name="information-circle-outline" size={16} color={colors.mutedForeground} />
+            <Text style={[styles.infoText, { color: colors.mutedForeground }]}>
+              This app stores all data locally on your device. Your family's journey stays private.
+            </Text>
+          </View>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  heroArea: { paddingHorizontal: 20, paddingBottom: 24, alignItems: "center" },
+  avatar: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 12,
+  },
+  avatarText: { fontSize: 32, fontFamily: "Inter_700Bold", color: "#fff" },
+  childName: { fontSize: 24, fontFamily: "Inter_700Bold", letterSpacing: -0.5, marginBottom: 4 },
+  childAge: { fontSize: 14, fontFamily: "Inter_500Medium", marginBottom: 2 },
+  parents: { fontSize: 13, fontFamily: "Inter_400Regular" },
+  content: { paddingHorizontal: 20, paddingTop: 20 },
+  statsRow: { flexDirection: "row", gap: 12, marginBottom: 16 },
+  statCard: {
+    flex: 1,
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+    alignItems: "center",
+    gap: 4,
+  },
+  statValue: { fontSize: 28, fontFamily: "Inter_700Bold", letterSpacing: -0.5 },
+  statLabel: { fontSize: 11, fontFamily: "Inter_500Medium", textAlign: "center" },
+  coachCard: { padding: 16, borderRadius: 14, borderWidth: 1, marginBottom: 20 },
+  coachHeader: { flexDirection: "row", alignItems: "center", gap: 5, marginBottom: 8 },
+  coachLabel: { fontSize: 11, fontFamily: "Inter_600SemiBold", letterSpacing: 0.5, textTransform: "uppercase" },
+  coachNote: { fontSize: 14, fontFamily: "Inter_400Regular", lineHeight: 21, fontStyle: "italic" },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+  },
+  sectionTitle: { fontSize: 18, fontFamily: "Inter_700Bold", letterSpacing: -0.3 },
+  editButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 10,
+    borderWidth: 1,
+  },
+  editButtonText: { fontSize: 13, fontFamily: "Inter_500Medium" },
+  profileForm: {
+    borderRadius: 16,
+    borderWidth: 1,
+    overflow: "hidden",
+    marginBottom: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  formField: {
+    padding: 16,
+    borderBottomWidth: 1,
+  },
+  fieldLabel: { fontSize: 11, fontFamily: "Inter_500Medium", letterSpacing: 0.3, textTransform: "uppercase", marginBottom: 6 },
+  fieldInput: { fontSize: 16, fontFamily: "Inter_400Regular", borderBottomWidth: 1, paddingBottom: 4 },
+  infoCard: {
+    flexDirection: "row",
+    gap: 10,
+    padding: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    alignItems: "flex-start",
+  },
+  infoText: { flex: 1, fontSize: 12, fontFamily: "Inter_400Regular", lineHeight: 18 },
+});
