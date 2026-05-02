@@ -28,6 +28,10 @@ function NativeTabLayout() {
         <Icon sf={{ default: "fork.knife", selected: "fork.knife" }} />
         <Label>Nourishment</Label>
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="journal">
+        <Icon sf={{ default: "book", selected: "book.fill" }} />
+        <Label>Journal</Label>
+      </NativeTabs.Trigger>
       <NativeTabs.Trigger name="profile">
         <Icon sf={{ default: "person.circle", selected: "person.circle.fill" }} />
         <Label>Profile</Label>
@@ -69,7 +73,7 @@ function ClassicTabLayout() {
           ) : null,
         tabBarLabelStyle: {
           fontSize: 10,
-          fontFamily: "Inter_500Medium",
+          fontFamily: "Inter_600SemiBold",
           marginBottom: isWeb ? 12 : 0,
         },
       }}
@@ -79,11 +83,7 @@ function ClassicTabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <SymbolView name="house" tintColor={color} size={22} />
-            ) : (
-              <Feather name="home" size={22} color={color} />
-            ),
+            isIOS ? <SymbolView name="house" tintColor={color} size={22} /> : <Feather name="home" size={22} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -91,11 +91,7 @@ function ClassicTabLayout() {
         options={{
           title: "Activities",
           tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <SymbolView name="leaf" tintColor={color} size={22} />
-            ) : (
-              <Ionicons name="leaf-outline" size={22} color={color} />
-            ),
+            isIOS ? <SymbolView name="leaf" tintColor={color} size={22} /> : <Ionicons name="leaf-outline" size={22} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -103,11 +99,7 @@ function ClassicTabLayout() {
         options={{
           title: "Milestones",
           tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <SymbolView name="checkmark.circle" tintColor={color} size={22} />
-            ) : (
-              <Ionicons name="checkmark-circle-outline" size={22} color={color} />
-            ),
+            isIOS ? <SymbolView name="checkmark.circle" tintColor={color} size={22} /> : <Ionicons name="checkmark-circle-outline" size={22} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -115,11 +107,15 @@ function ClassicTabLayout() {
         options={{
           title: "Nourishment",
           tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <SymbolView name="fork.knife" tintColor={color} size={22} />
-            ) : (
-              <Ionicons name="restaurant-outline" size={22} color={color} />
-            ),
+            isIOS ? <SymbolView name="fork.knife" tintColor={color} size={22} /> : <Ionicons name="restaurant-outline" size={22} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="journal"
+        options={{
+          title: "Journal",
+          tabBarIcon: ({ color }) =>
+            isIOS ? <SymbolView name="book" tintColor={color} size={22} /> : <Ionicons name="book-outline" size={22} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -127,11 +123,7 @@ function ClassicTabLayout() {
         options={{
           title: "Profile",
           tabBarIcon: ({ color }) =>
-            isIOS ? (
-              <SymbolView name="person.circle" tintColor={color} size={22} />
-            ) : (
-              <Ionicons name="person-circle-outline" size={22} color={color} />
-            ),
+            isIOS ? <SymbolView name="person.circle" tintColor={color} size={22} /> : <Ionicons name="person-circle-outline" size={22} color={color} />,
         }}
       />
     </Tabs>
@@ -139,8 +131,6 @@ function ClassicTabLayout() {
 }
 
 export default function TabLayout() {
-  if (isLiquidGlassAvailable()) {
-    return <NativeTabLayout />;
-  }
+  if (isLiquidGlassAvailable()) return <NativeTabLayout />;
   return <ClassicTabLayout />;
 }

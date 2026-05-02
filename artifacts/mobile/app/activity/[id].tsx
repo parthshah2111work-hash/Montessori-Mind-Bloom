@@ -13,7 +13,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { PillarBadge } from "@/components/PillarBadge";
-import { ACTIVITIES } from "@/constants/data";
+import { ACTIVITIES, PHASE_INFO } from "@/constants/data";
 import { useApp } from "@/context/AppContext";
 import { useColors } from "@/hooks/useColors";
 
@@ -61,6 +61,8 @@ export default function ActivityDetailScreen() {
   };
 
   const diffColor = DIFFICULTY_COLORS[activity.difficulty] ?? colors.primary;
+  const phaseInfo = PHASE_INFO[activity.phase];
+  const ageLabel = phaseInfo ? phaseInfo.range : `${activity.minMonths}–${activity.maxMonths}m`;
 
   function SectionToggle({ id: sId, title, icon, children }: { id: string; title: string; icon: string; children: React.ReactNode }) {
     const open = expandedSection === sId;
@@ -116,7 +118,7 @@ export default function ActivityDetailScreen() {
               </Text>
             </View>
             <Text style={[styles.ageRange, { color: colors.mutedForeground }]}>
-              {activity.ageRange} · {activity.duration}
+              {ageLabel} · {activity.duration}
             </Text>
           </View>
           <Text style={[styles.title, { color: colors.foreground }]}>{activity.title}</Text>

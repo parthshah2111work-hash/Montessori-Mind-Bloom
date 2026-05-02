@@ -11,7 +11,7 @@ import {
   View,
 } from "react-native";
 
-import { MontessoriActivity } from "@/constants/data";
+import { MontessoriActivity, PHASE_INFO } from "@/constants/data";
 import { useApp } from "@/context/AppContext";
 import { useColors } from "@/hooks/useColors";
 
@@ -36,6 +36,9 @@ export function ActivityCard({ activity, showComplete }: Props) {
 
   const isCompleted = completedActivityIds.includes(activity.id);
   const isFavorite = favoriteActivityIds.includes(activity.id);
+
+  const phaseInfo = PHASE_INFO[activity.phase];
+  const ageLabel = phaseInfo ? phaseInfo.range : `${activity.minMonths}–${activity.maxMonths}m`;
 
   const handlePress = () => {
     Animated.sequence([
@@ -79,13 +82,9 @@ export function ActivityCard({ activity, showComplete }: Props) {
         <View style={styles.header}>
           <View style={styles.meta}>
             <View style={[styles.difficultyDot, { backgroundColor: difficultyColor }]} />
-            <Text style={[styles.ageRange, { color: colors.mutedForeground }]}>
-              {activity.ageRange}
-            </Text>
+            <Text style={[styles.ageRange, { color: colors.mutedForeground }]}>{ageLabel}</Text>
             <Text style={[styles.dot, { color: colors.mutedForeground }]}>·</Text>
-            <Text style={[styles.duration, { color: colors.mutedForeground }]}>
-              {activity.duration}
-            </Text>
+            <Text style={[styles.duration, { color: colors.mutedForeground }]}>{activity.duration}</Text>
           </View>
           <View style={styles.actions}>
             <Pressable onPress={handleFavorite} hitSlop={8} style={styles.iconBtn}>
@@ -161,35 +160,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 8,
   },
-  meta: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-  },
-  difficultyDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-  },
-  ageRange: {
-    fontSize: 11,
-    fontFamily: "Inter_500Medium",
-  },
-  dot: {
-    fontSize: 11,
-  },
-  duration: {
-    fontSize: 11,
-    fontFamily: "Inter_500Medium",
-  },
-  actions: {
-    flexDirection: "row",
-    gap: 8,
-    alignItems: "center",
-  },
-  iconBtn: {
-    padding: 2,
-  },
+  meta: { flexDirection: "row", alignItems: "center", gap: 5 },
+  difficultyDot: { width: 6, height: 6, borderRadius: 3 },
+  ageRange: { fontSize: 11, fontFamily: "Inter_400Regular" },
+  dot: { fontSize: 11 },
+  duration: { fontSize: 11, fontFamily: "Inter_400Regular" },
+  actions: { flexDirection: "row", gap: 8, alignItems: "center" },
+  iconBtn: { padding: 2 },
   title: {
     fontSize: 17,
     fontFamily: "Inter_700Bold",
@@ -202,12 +179,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     marginBottom: 12,
   },
-  pillars: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 6,
-    marginBottom: 10,
-  },
+  pillars: { flexDirection: "row", flexWrap: "wrap", gap: 6, marginBottom: 10 },
   brainBox: {
     flexDirection: "row",
     alignItems: "flex-start",
@@ -217,7 +189,7 @@ const styles = StyleSheet.create({
   },
   brainText: {
     fontSize: 11,
-    fontFamily: "Inter_500Medium",
+    fontFamily: "Inter_400Regular",
     flex: 1,
     lineHeight: 15,
   },

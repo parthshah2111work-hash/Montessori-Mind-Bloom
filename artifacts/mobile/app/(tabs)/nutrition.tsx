@@ -10,7 +10,8 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { BRAIN_FOODS, DAILY_RHYTHM, NUTRITION } from "@/constants/data";
+import { BRAIN_FOODS, DAILY_RHYTHM, getNutritionForAge } from "@/constants/data";
+import { useApp } from "@/context/AppContext";
 import { useColors } from "@/hooks/useColors";
 
 type Tab = "meals" | "brainfoods" | "rhythm";
@@ -18,7 +19,10 @@ type Tab = "meals" | "brainfoods" | "rhythm";
 export default function NutritionScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
+  const { ageMonths, profile } = useApp();
   const [tab, setTab] = useState<Tab>("meals");
+
+  const nutrition = getNutritionForAge(ageMonths);
   const topPad = Platform.OS === "web" ? 67 : insets.top;
 
   return (
@@ -26,7 +30,7 @@ export default function NutritionScreen() {
       <View style={[styles.header, { paddingTop: topPad + 12 }]}>
         <Text style={[styles.title, { color: colors.foreground }]}>Nourishment</Text>
         <Text style={[styles.subtitle, { color: colors.mutedForeground }]}>
-          Food and rhythm as development tools
+          Personalised for {profile?.name ?? "your child"} · {nutrition.ageRange}
         </Text>
 
         <View style={[styles.tabBar, { backgroundColor: colors.secondary, borderColor: colors.border }]}>
@@ -43,12 +47,7 @@ export default function NutritionScreen() {
                 tab === t.key && { backgroundColor: colors.card, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.08, shadowRadius: 4, elevation: 2 },
               ]}
             >
-              <Text
-                style={[
-                  styles.tabText,
-                  { color: tab === t.key ? colors.foreground : colors.mutedForeground },
-                ]}
-              >
+              <Text style={[styles.tabText, { color: tab === t.key ? colors.foreground : colors.mutedForeground }]}>
                 {t.label}
               </Text>
             </Pressable>
@@ -57,25 +56,21 @@ export default function NutritionScreen() {
       </View>
 
       <ScrollView
-        contentContainerStyle={[
-          styles.content,
-          { paddingBottom: Platform.OS === "web" ? 100 : insets.bottom + 100 },
-        ]}
+        contentContainerStyle={[styles.content, { paddingBottom: Platform.OS === "web" ? 100 : insets.bottom + 100 }]}
         showsVerticalScrollIndicator={false}
       >
         {tab === "meals" && (
           <>
-            <View style={[styles.infoCard, { backgroundColor: colors.primary + "10", borderColor: colors.primary + "25" }]}>
-              <Ionicons name="leaf-outline" size={16} color={colors.primary} />
-              <Text style={[styles.infoText, { color: colors.primary }]}>
-                The Indian kitchen is a nutritional treasure. Aim for variety and traditional wholesomeness over processed alternatives.
-              </Text>
+            <View style={[styles.ageBanner, { backgroundColor: colors.primary + "12", borderColor: colors.primary + "30" }]}>
+              <Ionicons name="nutrition-outline" size={16} color={colors.primary} />
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.ageBannerTitle, { color: colors.primary }]}>{nutrition.title}</Text>
+                <Text style={[styles.ageBannerNote, { color: colors.primary + "cc" }]}>{nutrition.note}</Text>
+              </View>
             </View>
-            {NUTRITION.map((meal, i) => (
-              <View
-                key={i}
-                style={[styles.mealCard, { backgroundColor: colors.card, borderColor: colors.border }]}
-              >
+
+            {nutrition.meals.map((meal, i) => (
+              <View key={i} style={[styles.mealCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
                 <View style={styles.mealHeader}>
                   <View style={[styles.timeBadge, { backgroundColor: colors.primary + "18" }]}>
                     <Text style={[styles.mealTime, { color: colors.primary }]}>{meal.time}</Text>
@@ -92,15 +87,18 @@ export default function NutritionScreen() {
                 </View>
               </View>
             ))}
-            <View style={[styles.avoidCard, { backgroundColor: colors.destructive + "0d", borderColor: colors.destructive + "20" }]}>
-              <View style={styles.avoidHeader}>
-                <Ionicons name="warning-outline" size={14} color={colors.destructive} />
-                <Text style={[styles.avoidTitle, { color: colors.destructive }]}>Avoid Until Age 2</Text>
+
+            {nutrition.avoids && nutrition.avoids.length > 0 && (
+              <View style={[styles.avoidCard, { backgroundColor: colors.destructive + "0d", borderColor: colors.destructive + "20" }]}>
+                <View style={styles.avoidHeader}>
+                  <Ionicons name="warning-outline" size={14} color={colors.destructive} />
+                  <Text style={[styles.avoidTitle, { color: colors.destructive }]}>Avoid at This Stage</Text>
+                </View>
+                <Text style={[styles.avoidText, { color: colors.mutedForeground }]}>
+                  {nutrition.avoids.join(" · ")}
+                </Text>
               </View>
-              <Text style={[styles.avoidText, { color: colors.mutedForeground }]}>
-                Excess salt and sugar · Packaged snacks · Raw honey · Whole nuts · Highly processed foods
-              </Text>
-            </View>
+            )}
           </>
         )}
 
@@ -109,14 +107,23 @@ export default function NutritionScreen() {
             <View style={[styles.infoCard, { backgroundColor: colors.cognitive + "15", borderColor: colors.cognitive + "30" }]}>
               <Ionicons name="flash-outline" size={16} color={colors.cognitive} />
               <Text style={[styles.infoText, { color: colors.cognitive }]}>
-                These nutrients directly support the neurological explosion happening between 16–28 months. Prioritise them daily.
+                These nutrients directly support brain development at {ageMonths} months. Prioritise them every single day.
               </Text>
             </View>
+
+            {(nutrition.brainFoods ?? []).map((bf, i) => (
+              <View key={i} style={[styles.brainFoodItem, { backgroundColor: colors.card, borderColor: colors.border }]}>
+                <Ionicons name="leaf" size={14} color={colors.primary} />
+                <Text style={[styles.brainFoodText, { color: colors.foreground }]}>{bf}</Text>
+              </View>
+            ))}
+
+            <View style={styles.sectionDivider}>
+              <Text style={[styles.sectionDividerText, { color: colors.mutedForeground }]}>All age brain nutrients</Text>
+            </View>
+
             {BRAIN_FOODS.map((bf, i) => (
-              <View
-                key={i}
-                style={[styles.brainFoodCard, { backgroundColor: colors.card, borderColor: colors.border }]}
-              >
+              <View key={i} style={[styles.brainFoodCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
                 <View style={styles.brainFoodHeader}>
                   <View style={[styles.nutrientBadge, { backgroundColor: colors.cognitive + "20" }]}>
                     <Text style={[styles.nutrientName, { color: colors.cognitive }]}>{bf.nutrient}</Text>
@@ -132,6 +139,7 @@ export default function NutritionScreen() {
                 </View>
               </View>
             ))}
+
             <View style={[styles.gheeCard, { backgroundColor: colors.accent + "15", borderColor: colors.accent + "30" }]}>
               <Text style={[styles.gheeTitle, { color: colors.accent }]}>The Ghee Rule</Text>
               <Text style={[styles.gheeText, { color: colors.mutedForeground }]}>
@@ -150,10 +158,7 @@ export default function NutritionScreen() {
               </Text>
             </View>
             {DAILY_RHYTHM.map((r, i) => (
-              <View
-                key={i}
-                style={[styles.rhythmCard, { backgroundColor: colors.card, borderColor: colors.border }]}
-              >
+              <View key={i} style={[styles.rhythmCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
                 <View style={[styles.rhythmTime, { backgroundColor: colors.primary + "12" }]}>
                   <Text style={[styles.rhythmTimeText, { color: colors.primary }]}>{r.time}</Text>
                 </View>
@@ -166,7 +171,7 @@ export default function NutritionScreen() {
             <View style={[styles.sleepCard, { backgroundColor: colors.lavender + "15", borderColor: colors.lavender + "30" }]}>
               <Text style={[styles.sleepTitle, { color: colors.lavender }]}>The Sacred Nap</Text>
               <Text style={[styles.sleepText, { color: colors.mutedForeground }]}>
-                11–14 hours of total sleep (including nap) is non-negotiable. Growth hormones are released primarily during deep sleep. The nap is not optional — it is when the brain processes and consolidates the morning's learning.
+                11–14 hours of total sleep (including nap) is non-negotiable. Growth hormones release primarily during deep sleep. The nap is not optional — it is when the brain processes and consolidates the morning's learning.
               </Text>
             </View>
           </>
@@ -181,35 +186,16 @@ const styles = StyleSheet.create({
   header: { paddingHorizontal: 20, paddingBottom: 8 },
   title: { fontSize: 28, fontFamily: "Inter_700Bold", letterSpacing: -0.8, marginBottom: 2 },
   subtitle: { fontSize: 13, fontFamily: "Inter_400Regular", marginBottom: 14 },
-  tabBar: {
-    flexDirection: "row",
-    borderRadius: 12,
-    padding: 4,
-    borderWidth: 1,
-    marginBottom: 4,
-  },
+  tabBar: { flexDirection: "row", borderRadius: 12, padding: 4, borderWidth: 1, marginBottom: 4 },
   tabItem: { flex: 1, paddingVertical: 8, alignItems: "center", borderRadius: 9 },
   tabText: { fontSize: 12, fontFamily: "Inter_600SemiBold" },
   content: { paddingHorizontal: 20, paddingTop: 12, gap: 12 },
-  infoCard: {
-    flexDirection: "row",
-    gap: 10,
-    padding: 14,
-    borderRadius: 12,
-    borderWidth: 1,
-    alignItems: "flex-start",
-  },
+  ageBanner: { flexDirection: "row", gap: 10, padding: 14, borderRadius: 12, borderWidth: 1, alignItems: "flex-start" },
+  ageBannerTitle: { fontSize: 14, fontFamily: "Inter_700Bold", marginBottom: 3 },
+  ageBannerNote: { fontSize: 12, fontFamily: "Inter_400Regular", lineHeight: 17 },
+  infoCard: { flexDirection: "row", gap: 10, padding: 14, borderRadius: 12, borderWidth: 1, alignItems: "flex-start" },
   infoText: { flex: 1, fontSize: 13, fontFamily: "Inter_400Regular", lineHeight: 19, fontStyle: "italic" },
-  mealCard: {
-    padding: 16,
-    borderRadius: 16,
-    borderWidth: 1,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 1,
-  },
+  mealCard: { padding: 16, borderRadius: 16, borderWidth: 1, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1 },
   mealHeader: { flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 6 },
   timeBadge: { paddingHorizontal: 10, paddingVertical: 3, borderRadius: 8 },
   mealTime: { fontSize: 12, fontFamily: "Inter_700Bold" },
@@ -222,16 +208,11 @@ const styles = StyleSheet.create({
   avoidHeader: { flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 6 },
   avoidTitle: { fontSize: 13, fontFamily: "Inter_600SemiBold" },
   avoidText: { fontSize: 12, fontFamily: "Inter_400Regular", lineHeight: 18 },
-  brainFoodCard: {
-    padding: 16,
-    borderRadius: 16,
-    borderWidth: 1,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 1,
-  },
+  brainFoodItem: { flexDirection: "row", alignItems: "center", gap: 10, padding: 12, borderRadius: 10, borderWidth: 1 },
+  brainFoodText: { fontSize: 14, fontFamily: "Inter_400Regular", flex: 1 },
+  sectionDivider: { alignItems: "center", paddingVertical: 4 },
+  sectionDividerText: { fontSize: 11, fontFamily: "Inter_600SemiBold", letterSpacing: 0.5, textTransform: "uppercase" },
+  brainFoodCard: { padding: 16, borderRadius: 16, borderWidth: 1, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1 },
   brainFoodHeader: { flexDirection: "row", alignItems: "center", gap: 10, marginBottom: 10 },
   nutrientBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8 },
   nutrientName: { fontSize: 12, fontFamily: "Inter_700Bold", letterSpacing: 0.2 },
@@ -242,18 +223,7 @@ const styles = StyleSheet.create({
   gheeCard: { padding: 16, borderRadius: 14, borderWidth: 1 },
   gheeTitle: { fontSize: 15, fontFamily: "Inter_700Bold", marginBottom: 6 },
   gheeText: { fontSize: 13, fontFamily: "Inter_400Regular", lineHeight: 19, fontStyle: "italic" },
-  rhythmCard: {
-    flexDirection: "row",
-    gap: 12,
-    padding: 14,
-    borderRadius: 14,
-    borderWidth: 1,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 1,
-  },
+  rhythmCard: { flexDirection: "row", gap: 12, padding: 14, borderRadius: 14, borderWidth: 1, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1 },
   rhythmTime: { paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8, alignSelf: "flex-start", minWidth: 72, alignItems: "center" },
   rhythmTimeText: { fontSize: 12, fontFamily: "Inter_700Bold" },
   rhythmContent: { flex: 1 },
@@ -262,4 +232,5 @@ const styles = StyleSheet.create({
   sleepCard: { padding: 16, borderRadius: 14, borderWidth: 1 },
   sleepTitle: { fontSize: 15, fontFamily: "Inter_700Bold", marginBottom: 6 },
   sleepText: { fontSize: 13, fontFamily: "Inter_400Regular", lineHeight: 19 },
+  lavender: { color: "#8b7db5" },
 });
