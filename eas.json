@@ -1,8 +1,7 @@
 {
   "cli": {
     "version": ">= 18.9.1",
-    "appVersionSource": "remote",
-    "appDir": "."
+    "appVersionSource": "remote"
   },
   "build": {
     "development": {
@@ -13,13 +12,13 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk"
-      },
+      }
     },
     "production": {
       "autoIncrement": true,
       "android": {
         "buildType": "apk"
-      },
+      }
     }
   },
   "submit": {
