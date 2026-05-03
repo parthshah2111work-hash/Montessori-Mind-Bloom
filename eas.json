@@ -13,8 +13,7 @@
       "android": {
         "buildType": "apk"
       },
-      "node": "20.11.0",
-      "pnpmVersion": "9.1.0"
+      "node": "20.11.0"
     },
     "production": {
       "autoIncrement": true,
