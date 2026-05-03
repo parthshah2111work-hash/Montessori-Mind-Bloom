@@ -1,46 +1,12 @@
 import { BlurView } from "expo-blur";
-import { isLiquidGlassAvailable } from "expo-glass-effect";
 import { Tabs } from "expo-router";
-import { Icon, Label, NativeTabs } from "expo-router/unstable-native-tabs";
-import { SymbolView } from "expo-symbols";
-import { Feather, Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Platform, StyleSheet, View, useColorScheme } from "react-native";
 
 import { useColors } from "@/hooks/useColors";
 
-function NativeTabLayout() {
-  return (
-    <NativeTabs>
-      <NativeTabs.Trigger name="index">
-        <Icon sf={{ default: "house", selected: "house.fill" }} />
-        <Label>Home</Label>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="activities">
-        <Icon sf={{ default: "leaf", selected: "leaf.fill" }} />
-        <Label>Activities</Label>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="milestones">
-        <Icon sf={{ default: "checkmark.circle", selected: "checkmark.circle.fill" }} />
-        <Label>Milestones</Label>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="nutrition">
-        <Icon sf={{ default: "fork.knife", selected: "fork.knife" }} />
-        <Label>Nourishment</Label>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="journal">
-        <Icon sf={{ default: "book", selected: "book.fill" }} />
-        <Label>Journal</Label>
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="profile">
-        <Icon sf={{ default: "person.circle", selected: "person.circle.fill" }} />
-        <Label>Profile</Label>
-      </NativeTabs.Trigger>
-    </NativeTabs>
-  );
-}
-
-function ClassicTabLayout() {
+export default function TabLayout() {
   const colors = useColors();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
@@ -82,55 +48,74 @@ function ClassicTabLayout() {
         name="index"
         options={{
           title: "Home",
-          tabBarIcon: ({ color }) =>
-            isIOS ? <SymbolView name="house" tintColor={color} size={22} /> : <Feather name="home" size={22} color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? "home" : "home-outline"} size={22} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="activities"
         options={{
           title: "Activities",
-          tabBarIcon: ({ color }) =>
-            isIOS ? <SymbolView name="leaf" tintColor={color} size={22} /> : <Ionicons name="leaf-outline" size={22} color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? "rocket" : "rocket-outline"} size={22} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="trends"
+        options={{
+          title: "Trends",
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? "trending-up" : "trending-up-outline"} size={22} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="milestones"
         options={{
           title: "Milestones",
-          tabBarIcon: ({ color }) =>
-            isIOS ? <SymbolView name="checkmark.circle" tintColor={color} size={22} /> : <Ionicons name="checkmark-circle-outline" size={22} color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? "checkmark-circle" : "checkmark-circle-outline"} size={22} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="nutrition"
         options={{
-          title: "Nourishment",
-          tabBarIcon: ({ color }) =>
-            isIOS ? <SymbolView name="fork.knife" tintColor={color} size={22} /> : <Ionicons name="restaurant-outline" size={22} color={color} />,
+          title: "Nutrition",
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? "restaurant" : "restaurant-outline"} size={22} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="health"
+        options={{
+          title: "Health",
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? "medical" : "medical-outline"} size={22} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="journal"
         options={{
           title: "Journal",
-          tabBarIcon: ({ color }) =>
-            isIOS ? <SymbolView name="book" tintColor={color} size={22} /> : <Ionicons name="book-outline" size={22} color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? "book" : "book-outline"} size={22} color={color} />
+          ),
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: "Profile",
-          tabBarIcon: ({ color }) =>
-            isIOS ? <SymbolView name="person.circle" tintColor={color} size={22} /> : <Ionicons name="person-circle-outline" size={22} color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? "person-circle" : "person-circle-outline"} size={22} color={color} />
+          ),
         }}
       />
     </Tabs>
   );
-}
-
-export default function TabLayout() {
-  if (isLiquidGlassAvailable()) return <NativeTabLayout />;
-  return <ClassicTabLayout />;
 }

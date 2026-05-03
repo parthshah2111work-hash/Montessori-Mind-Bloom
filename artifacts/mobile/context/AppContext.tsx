@@ -8,7 +8,16 @@ import React, {
   useState,
 } from "react";
 
-import { ACTIVITIES, getActivitiesForAge, MontessoriActivity } from "@/constants/data";
+import {
+  ACTIVITIES,
+  getActivitiesForAge,
+  MontessoriActivity,
+  Vaccination,
+  Prescription,
+  Medicine,
+  GrowthRecord,
+  DEFAULT_VACCINATIONS,
+} from "@/constants/data";
 
 export interface ChildProfile {
   name: string;
@@ -18,7 +27,7 @@ export interface ChildProfile {
 
 export interface ActivityCompletion {
   activityId: string;
-  completedAt: string; // ISO timestamp
+  completedAt: string;
 }
 
 export interface JournalEntry {
@@ -54,6 +63,19 @@ interface AppContextType {
   currentStreak: number;
   longestStreak: number;
   activeDaysThisWeek: number;
+  vaccinations: Vaccination[];
+  addVaccination: (v: Omit<Vaccination, "id">) => void;
+  deleteVaccination: (id: string) => void;
+  updateVaccination: (id: string, updates: Partial<Vaccination>) => void;
+  prescriptions: Prescription[];
+  addPrescription: (p: Omit<Prescription, "id">) => void;
+  deletePrescription: (id: string) => void;
+  medicines: Medicine[];
+  addMedicine: (m: Omit<Medicine, "id">) => void;
+  deleteMedicine: (id: string) => void;
+  growthHistory: GrowthRecord[];
+  addGrowthRecord: (r: Omit<GrowthRecord, "id">) => void;
+  deleteGrowthRecord: (id: string) => void;
 }
 
 function calcAgeMonths(dob: string): number {
@@ -81,49 +103,32 @@ function toDateKey(iso: string): string {
   return iso.slice(0, 10);
 }
 
-function computeStreaks(activeDays: ReadonlySet<string>): {
-  current: number;
-  longest: number;
-  thisWeek: number;
-} {
+function computeStreaks(activeDays: ReadonlySet<string>): { current: number; longest: number; thisWeek: number } {
   const todayDate = new Date();
   todayDate.setHours(0, 0, 0, 0);
   const todayKey = todayDate.toISOString().slice(0, 10);
 
-  // current streak — consecutive days ending today or yesterday
   let current = 0;
   const cursor = new Date(todayDate);
-  if (!activeDays.has(todayKey)) {
-    cursor.setDate(cursor.getDate() - 1);
-  }
+  if (!activeDays.has(todayKey)) cursor.setDate(cursor.getDate() - 1);
   while (true) {
     const key = cursor.toISOString().slice(0, 10);
-    if (activeDays.has(key)) {
-      current++;
-      cursor.setDate(cursor.getDate() - 1);
-    } else {
-      break;
-    }
+    if (activeDays.has(key)) { current++; cursor.setDate(cursor.getDate() - 1); }
+    else break;
   }
 
-  // longest streak
   const sorted = Array.from(activeDays).sort();
-  let longest = 0;
-  let run = 0;
+  let longest = 0, run = 0;
   let prev: string | null = null;
   for (const d of sorted) {
     if (prev) {
-      const diff =
-        (new Date(d).getTime() - new Date(prev).getTime()) / 86400000;
+      const diff = (new Date(d).getTime() - new Date(prev).getTime()) / 86400000;
       run = diff === 1 ? run + 1 : 1;
-    } else {
-      run = 1;
-    }
+    } else { run = 1; }
     if (run > longest) longest = run;
     prev = d;
   }
 
-  // this week (Mon–Sun)
   const weekStart = new Date(todayDate);
   weekStart.setDate(todayDate.getDate() - ((todayDate.getDay() + 6) % 7));
   let thisWeek = 0;
@@ -132,7 +137,6 @@ function computeStreaks(activeDays: ReadonlySet<string>): {
     d.setDate(weekStart.getDate() + i);
     if (activeDays.has(d.toISOString().slice(0, 10))) thisWeek++;
   }
-
   return { current, longest, thisWeek };
 }
 
@@ -146,11 +150,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [masteredMilestones, setMastered] = useState<string[]>([]);
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
   const [activityCompletions, setActivityCompletions] = useState<ActivityCompletion[]>([]);
+  const [vaccinations, setVaccinations] = useState<Vaccination[]>(DEFAULT_VACCINATIONS);
+  const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
+  const [medicines, setMedicines] = useState<Medicine[]>([]);
+  const [growthHistory, setGrowthHistory] = useState<GrowthRecord[]>([]);
 
   useEffect(() => {
     (async () => {
       try {
-        const [p, c, f, m, j, ob, ac] = await Promise.all([
+        const [p, c, f, m, j, ob, ac, v, pr, med, gh] = await Promise.all([
           AsyncStorage.getItem("profile_v2"),
           AsyncStorage.getItem("completed"),
           AsyncStorage.getItem("favorites"),
@@ -158,6 +166,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           AsyncStorage.getItem("journal"),
           AsyncStorage.getItem("onboarding_done"),
           AsyncStorage.getItem("activity_completions"),
+          AsyncStorage.getItem("vaccinations"),
+          AsyncStorage.getItem("prescriptions"),
+          AsyncStorage.getItem("medicines"),
+          AsyncStorage.getItem("growthHistory"),
         ]);
         if (p) setProfile(JSON.parse(p));
         if (c) setCompleted(JSON.parse(c));
@@ -166,6 +178,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         if (j) setJournalEntries(JSON.parse(j));
         if (ob) setOnboardingDone(true);
         if (ac) setActivityCompletions(JSON.parse(ac));
+        if (v) setVaccinations(JSON.parse(v));
+        if (pr) setPrescriptions(JSON.parse(pr));
+        if (med) setMedicines(JSON.parse(med));
+        if (gh) setGrowthHistory(JSON.parse(gh));
       } catch {}
     })();
   }, []);
@@ -195,8 +211,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       return next;
     });
     setActivityCompletions((prev) => {
-      const alreadyCompleted = prev.some((c) => c.activityId === id);
-      const next = alreadyCompleted
+      const already = prev.some((c) => c.activityId === id);
+      const next = already
         ? prev.filter((c) => c.activityId !== id)
         : [...prev, { activityId: id, completedAt: new Date().toISOString() }];
       AsyncStorage.setItem("activity_completions", JSON.stringify(next));
@@ -252,29 +268,98 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   const todayQuests = useMemo(() => getDailyQuests(ageMonths), [ageMonths]);
 
+  const addVaccination = useCallback((v: Omit<Vaccination, "id">) => {
+    const newV: Vaccination = { ...v, id: Date.now().toString() };
+    setVaccinations((prev) => {
+      const next = [...prev, newV].sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+      AsyncStorage.setItem("vaccinations", JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  const deleteVaccination = useCallback((id: string) => {
+    setVaccinations((prev) => {
+      const next = prev.filter((v) => v.id !== id);
+      AsyncStorage.setItem("vaccinations", JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  const updateVaccination = useCallback((id: string, updates: Partial<Vaccination>) => {
+    setVaccinations((prev) => {
+      const next = prev.map((v) => (v.id === id ? { ...v, ...updates } : v));
+      AsyncStorage.setItem("vaccinations", JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  const addPrescription = useCallback((p: Omit<Prescription, "id">) => {
+    const newP: Prescription = { ...p, id: Date.now().toString() };
+    setPrescriptions((prev) => {
+      const next = [newP, ...prev];
+      AsyncStorage.setItem("prescriptions", JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  const deletePrescription = useCallback((id: string) => {
+    setPrescriptions((prev) => {
+      const next = prev.filter((p) => p.id !== id);
+      AsyncStorage.setItem("prescriptions", JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  const addMedicine = useCallback((m: Omit<Medicine, "id">) => {
+    const newM: Medicine = { ...m, id: Date.now().toString() };
+    setMedicines((prev) => {
+      const next = [newM, ...prev];
+      AsyncStorage.setItem("medicines", JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  const deleteMedicine = useCallback((id: string) => {
+    setMedicines((prev) => {
+      const next = prev.filter((m) => m.id !== id);
+      AsyncStorage.setItem("medicines", JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  const addGrowthRecord = useCallback((r: Omit<GrowthRecord, "id">) => {
+    const newR: GrowthRecord = { ...r, id: Date.now().toString() };
+    setGrowthHistory((prev) => {
+      const next = [...prev, newR].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      AsyncStorage.setItem("growthHistory", JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
+  const deleteGrowthRecord = useCallback((id: string) => {
+    setGrowthHistory((prev) => {
+      const next = prev.filter((r) => r.id !== id);
+      AsyncStorage.setItem("growthHistory", JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
   return (
     <AppContext.Provider
       value={{
-        profile,
-        ageMonths,
-        updateProfile,
-        completedActivityIds,
-        toggleActivityComplete,
+        profile, ageMonths, updateProfile,
+        completedActivityIds, toggleActivityComplete,
         todayQuests,
-        favoriteActivityIds,
-        toggleFavorite,
-        masteredMilestones,
-        toggleMilestone,
-        isOnboardingDone,
-        completeOnboarding,
-        journalEntries,
-        addJournalEntry,
-        deleteJournalEntry,
-        activityCompletions,
-        activeDaysSet,
-        currentStreak,
-        longestStreak,
-        activeDaysThisWeek,
+        favoriteActivityIds, toggleFavorite,
+        masteredMilestones, toggleMilestone,
+        isOnboardingDone, completeOnboarding,
+        journalEntries, addJournalEntry, deleteJournalEntry,
+        activityCompletions, activeDaysSet,
+        currentStreak, longestStreak, activeDaysThisWeek,
+        vaccinations, addVaccination, deleteVaccination, updateVaccination,
+        prescriptions, addPrescription, deletePrescription,
+        medicines, addMedicine, deleteMedicine,
+        growthHistory, addGrowthRecord, deleteGrowthRecord,
       }}
     >
       {children}

@@ -235,6 +235,23 @@ export default function HomeScreen() {
             <Text style={[styles.actionText, { color: colors.cognitive }]}>Milestones</Text>
           </Pressable>
         </View>
+
+        {/* AI Assistant Banner */}
+        <Pressable
+          onPress={() => router.push("/assistant")}
+          style={[styles.assistantBanner, { backgroundColor: colors.lavender + "22", borderColor: colors.lavender + "60" }]}
+        >
+          <View style={[styles.assistantIcon, { backgroundColor: colors.lavender }]}>
+            <Ionicons name="sparkles" size={20} color="white" />
+          </View>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.assistantTitle, { color: colors.foreground }]}>Ask Lumina AI</Text>
+            <Text style={[styles.assistantSub, { color: colors.mutedForeground }]}>
+              Parenting advice · Activities · Nutrition
+            </Text>
+          </View>
+          <Ionicons name="arrow-forward-circle" size={24} color={colors.lavender} />
+        </Pressable>
       </View>
     </ScrollView>
   );
@@ -313,7 +330,11 @@ const styles = StyleSheet.create({
   pillarLabelContainer: { width: 115 },
   pillarLabel: { fontSize: 13, fontFamily: "Inter_600SemiBold" },
   progressTrack: { flex: 1, height: 5, borderRadius: 3, overflow: "hidden" },
-  quickActions: { flexDirection: "row", gap: 10, marginBottom: 8 },
+  quickActions: { flexDirection: "row", gap: 10, marginBottom: 14 },
   actionCard: { flex: 1, padding: 14, borderRadius: 14, borderWidth: 1, alignItems: "center", gap: 6 },
   actionText: { fontSize: 11, fontFamily: "Inter_600SemiBold", textAlign: "center" },
+  assistantBanner: { flexDirection: "row", alignItems: "center", gap: 14, padding: 16, borderRadius: 18, borderWidth: 1, marginBottom: 20 },
+  assistantIcon: { width: 44, height: 44, borderRadius: 22, justifyContent: "center", alignItems: "center" },
+  assistantTitle: { fontSize: 16, fontFamily: "Inter_700Bold", marginBottom: 2 },
+  assistantSub: { fontSize: 12, fontFamily: "Inter_400Regular" },
 });

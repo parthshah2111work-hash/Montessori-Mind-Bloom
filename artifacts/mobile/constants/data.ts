@@ -1485,6 +1485,11 @@ export const CATEGORY_LABELS: Record<string, string> = {
   creative: "Creative",
   cognitive: "Cognitive",
   outdoor: "Outdoor",
+  health: "Health",
+  development: "Development",
+  education: "Education",
+  parenting: "Parenting",
+  nutrition: "Nutrition",
 };
 
 export function getActivitiesForAge(ageMonths: number): MontessoriActivity[] {
@@ -1494,4 +1499,86 @@ export function getActivitiesForAge(ageMonths: number): MontessoriActivity[] {
 export function getMilestonesForAge(ageMonths: number) {
   return MILESTONES.filter(m => Math.abs(m.month - ageMonths) <= 6)
     .sort((a, b) => Math.abs(a.month - ageMonths) - Math.abs(b.month - ageMonths));
+}
+
+// ── Health Library Types ─────────────────────────────────────────────────────
+
+export interface Vaccination {
+  id: string;
+  name: string;
+  dueDate: string;
+  description: string;
+  isCompleted: boolean;
+}
+
+export interface Prescription {
+  id: string;
+  date: string;
+  doctorName: string;
+  notes: string;
+  photoUri: string;
+}
+
+export interface Medicine {
+  id: string;
+  name: string;
+  dosage: string;
+  frequency: string;
+  startDate: string;
+  reminders: string[];
+}
+
+export interface GrowthRecord {
+  id: string;
+  date: string;
+  weight: number;
+  height: number;
+}
+
+export const DEFAULT_VACCINATIONS: Vaccination[] = [
+  { id: "v1", name: "BCG",           dueDate: "2024-01-10T10:00:00Z", description: "Against Tuberculosis",               isCompleted: false },
+  { id: "v2", name: "Hepatitis B-1", dueDate: "2024-01-15T10:00:00Z", description: "Anti-viral (at birth)",              isCompleted: false },
+  { id: "v3", name: "DTP-1",         dueDate: "2024-03-01T10:00:00Z", description: "Diphtheria, Tetanus, Pertussis",     isCompleted: false },
+  { id: "v4", name: "IPV-1",         dueDate: "2024-03-15T10:00:00Z", description: "Inactivated Polio Vaccine",          isCompleted: false },
+  { id: "v5", name: "MMR-1",         dueDate: "2024-09-01T10:00:00Z", description: "Measles, Mumps, Rubella (9 months)", isCompleted: false },
+  { id: "v6", name: "Varicella",     dueDate: "2025-01-01T10:00:00Z", description: "Chickenpox vaccine (12–15 months)",  isCompleted: false },
+];
+
+// ── Trends / Research ────────────────────────────────────────────────────────
+
+export type TrendType = "video" | "article" | "study" | "material";
+
+export interface TrendItem {
+  id: string;
+  title: string;
+  type: TrendType;
+  category: string;
+  minAgeMonths: number;
+  maxAgeMonths: number;
+  url: string;
+  source: string;
+  description: string;
+}
+
+export const TREND_CATEGORIES = ["health", "development", "education", "parenting", "nutrition", "language"];
+
+export const TRENDS: TrendItem[] = [
+  { id: "t1",  title: "The Science of Early Childhood Development",    type: "video",    category: "development", minAgeMonths: 0,  maxAgeMonths: 60, url: "https://www.youtube.com/watch?v=VNNsN9IJk0s",                                                    source: "Harvard Center on the Developing Child", description: "An overview of how brain architecture is built in the early years and why it matters for adult health and learning." },
+  { id: "t2",  title: "Neuroscience of Reading to Toddlers",           type: "article",  category: "education",   minAgeMonths: 12, maxAgeMonths: 36, url: "https://www.nature.com/articles/d41586-018-05004-w",                                               source: "Nature",                                  description: "How shared reading with young children stimulates brain regions responsible for visual processing and language." },
+  { id: "t3",  title: "The Importance of Play for Brain Growth",       type: "study",    category: "parenting",   minAgeMonths: 24, maxAgeMonths: 60, url: "https://publications.aap.org/pediatrics/article/142/3/e20182058/38649",                             source: "American Academy of Pediatrics",          description: "A clinical report on the power of play in enhancing child development and social-emotional skills." },
+  { id: "t4",  title: "Nutrition and Brain Development in Infancy",    type: "material", category: "nutrition",   minAgeMonths: 0,  maxAgeMonths: 12, url: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6071262/",                                            source: "NIH - PubMed",                            description: "Detailed research on specific nutrients like Iron, DHA, and Choline and their impact on the infant brain." },
+  { id: "t5",  title: "Screen Time Guidelines for Under 5s",           type: "article",  category: "health",      minAgeMonths: 0,  maxAgeMonths: 60, url: "https://www.who.int/news/item/24-04-2019-to-grow-up-healthy-children-need-to-sit-less-and-play-more", source: "World Health Organization",               description: "WHO's official recommendations on physical activity, sedentary behaviour and sleep for young children." },
+  { id: "t6",  title: "Montessori at Home: The First 3 Years",         type: "video",    category: "parenting",   minAgeMonths: 0,  maxAgeMonths: 36, url: "https://www.youtube.com/watch?v=4yO3e_8C0uE",                                                    source: "The Montessori Notebook",                 description: "Practical ways to set up your home environment to foster independence in toddlers and babies." },
+  { id: "t7",  title: "Bilingualism from Birth: Benefits and Myths",   type: "study",    category: "language",    minAgeMonths: 0,  maxAgeMonths: 60, url: "https://www.sciencedaily.com/releases/2020/02/200212150156.htm",                                   source: "ScienceDaily",                            description: "Research showing how learning multiple languages early in life enhances executive function and cognitive flexibility." },
+  { id: "t8",  title: "Emotional Regulation in 4-Year Olds",           type: "article",  category: "development", minAgeMonths: 48, maxAgeMonths: 60, url: "https://www.psychologytoday.com/us/blog/the-wide-wide-world-psychology/201705/helping-your-four-year-old-manage-emotions", source: "Psychology Today", description: "Techniques for helping pre-schoolers understand and manage big feelings through co-regulation." },
+  { id: "t9",  title: "The Power of Musical Training in Early Childhood", type: "video", category: "education",   minAgeMonths: 36, maxAgeMonths: 60, url: "https://www.youtube.com/watch?v=R0JKCYZ8hng",                                                    source: "TED-Ed",                                  description: "How playing an instrument engages practically every area of the brain at once, especially in young children." },
+  { id: "t10", title: "Sleep and Brain Plasticity in Infants",         type: "study",    category: "health",      minAgeMonths: 0,  maxAgeMonths: 12, url: "https://www.nature.com/articles/s41598-020-74062-w",                                              source: "Scientific Reports",                      description: "A study on how infant sleep patterns correlate with the development of neural connections." },
+  { id: "t11", title: "Nature vs Nurture: The Epigenetics of Parenting", type: "article",category: "parenting",   minAgeMonths: 0,  maxAgeMonths: 60, url: "https://developingchild.harvard.edu/science/deep-dive/epigenetics/",                             source: "Harvard University",                      description: "How environment and experiences can physically change the way genes are expressed in a developing child." },
+  { id: "t12", title: "The Role of Fatherhood in Child Development",   type: "study",    category: "parenting",   minAgeMonths: 0,  maxAgeMonths: 60, url: "https://www.childwelfare.gov/pubpdfs/fatherhood.pdf",                                             source: "Child Welfare Information Gateway",       description: "Research findings on the unique and vital impact of fathers on their children's cognitive and social outcomes." },
+  { id: "t13", title: "Vitamin D and Early Growth",                    type: "material", category: "nutrition",   minAgeMonths: 0,  maxAgeMonths: 24, url: "https://www.aap.org/en/patient-care/vitamin-d-supplementation-for-infants/",                      source: "American Academy of Pediatrics",          description: "Guidance on Vitamin D requirements for breastfeeding and formula-fed infants." },
+  { id: "t14", title: "Developing Empathy in Toddlers",               type: "video",    category: "development", minAgeMonths: 18, maxAgeMonths: 48, url: "https://www.youtube.com/watch?v=1Evwgu369Jw",                                                    source: "Zero to Three",                           description: "Insight into when and how children begin to understand that others have feelings and perspectives." },
+];
+
+export function getTrendsForAge(ageMonths: number): TrendItem[] {
+  return TRENDS.filter(t => ageMonths >= t.minAgeMonths - 12 && ageMonths <= t.maxAgeMonths + 12);
 }
