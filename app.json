@@ -9,7 +9,11 @@
       }
     },
     "android": {
-      "package": "com.parthshah2111work.Lumina Growth"
+      "package": "com.parthshah.luminagrowth", 
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
     }
   }
 }
