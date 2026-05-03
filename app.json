@@ -1,12 +1,15 @@
 {
   "expo": {
+    "name": "Lumina Growth",
+    "slug": "lumina-growth",
+    "version": "1.0.0",
     "extra": {
       "eas": {
-        "projectId": "c3d9542d-0a14-4675-af59-cd49bc897772"
+        "projectId": "5da4fd78-93cd-4509-8da0-b630d8ea64c6"
       }
     },
     "android": {
-      "package": "com.parthshah2111work.workspace"
+      "package": "com.parthshah2111work.Lumina Growth"
     }
   }
 }
