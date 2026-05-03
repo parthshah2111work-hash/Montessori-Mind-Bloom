@@ -5,7 +5,7 @@
   "packageManager": "pnpm@9.1.0",
   "engines": {
     "node": ">=18",
-    "pnpm": ">=9"
+    "pnpm": ">=8"
   },
   "scripts": {
     "eas-build-pre-install": "npm install -g pnpm@9.1.0 && corepack enable && pnpm install --no-frozen-lockfile",
