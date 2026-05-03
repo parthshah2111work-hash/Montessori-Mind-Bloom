@@ -9,11 +9,12 @@
       }
     },
     "android": {
-      "package": "com.parthshah.luminagrowth", 
+      "package": "com.parthshah.luminagrowth",
       "versionCode": 1,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      }
     }
   }
 }
