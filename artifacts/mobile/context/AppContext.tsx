@@ -4,15 +4,33 @@ import React, {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
 } from "react";
 
-import { ACTIVITIES, getActivitiesForAge, getPhaseForAge, MontessoriActivity } from "@/constants/data";
+import { ACTIVITIES, getActivitiesForAge, MontessoriActivity } from "@/constants/data";
 
 export interface ChildProfile {
   name: string;
-  dateOfBirth: string; // ISO date string
+  dateOfBirth: string;
   parentNames: string;
+}
+
+export interface ActivityCompletion {
+  activityId: string;
+  completedAt: string; // ISO timestamp
+}
+
+export interface JournalEntry {
+  id: string;
+  createdAt: string;
+  ageMonths: number;
+  newWord?: string;
+  newSkill?: string;
+  funnyMoment?: string;
+  milestone?: string;
+  mood: "wonderful" | "good" | "tired" | "challenging";
+  photoUri?: string;
 }
 
 interface AppContextType {
@@ -31,18 +49,11 @@ interface AppContextType {
   journalEntries: JournalEntry[];
   addJournalEntry: (entry: Omit<JournalEntry, "id" | "createdAt">) => void;
   deleteJournalEntry: (id: string) => void;
-}
-
-export interface JournalEntry {
-  id: string;
-  createdAt: string;
-  ageMonths: number;
-  newWord?: string;
-  newSkill?: string;
-  funnyMoment?: string;
-  milestone?: string;
-  mood: "wonderful" | "good" | "tired" | "challenging";
-  photoUri?: string;
+  activityCompletions: ActivityCompletion[];
+  activeDaysSet: ReadonlySet<string>;
+  currentStreak: number;
+  longestStreak: number;
+  activeDaysThisWeek: number;
 }
 
 function calcAgeMonths(dob: string): number {
@@ -66,6 +77,65 @@ function getDailyQuests(ageMonths: number): MontessoriActivity[] {
   return seeded.slice(0, 3);
 }
 
+function toDateKey(iso: string): string {
+  return iso.slice(0, 10);
+}
+
+function computeStreaks(activeDays: ReadonlySet<string>): {
+  current: number;
+  longest: number;
+  thisWeek: number;
+} {
+  const todayDate = new Date();
+  todayDate.setHours(0, 0, 0, 0);
+  const todayKey = todayDate.toISOString().slice(0, 10);
+
+  // current streak — consecutive days ending today or yesterday
+  let current = 0;
+  const cursor = new Date(todayDate);
+  if (!activeDays.has(todayKey)) {
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  while (true) {
+    const key = cursor.toISOString().slice(0, 10);
+    if (activeDays.has(key)) {
+      current++;
+      cursor.setDate(cursor.getDate() - 1);
+    } else {
+      break;
+    }
+  }
+
+  // longest streak
+  const sorted = Array.from(activeDays).sort();
+  let longest = 0;
+  let run = 0;
+  let prev: string | null = null;
+  for (const d of sorted) {
+    if (prev) {
+      const diff =
+        (new Date(d).getTime() - new Date(prev).getTime()) / 86400000;
+      run = diff === 1 ? run + 1 : 1;
+    } else {
+      run = 1;
+    }
+    if (run > longest) longest = run;
+    prev = d;
+  }
+
+  // this week (Mon–Sun)
+  const weekStart = new Date(todayDate);
+  weekStart.setDate(todayDate.getDate() - ((todayDate.getDay() + 6) % 7));
+  let thisWeek = 0;
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(weekStart);
+    d.setDate(weekStart.getDate() + i);
+    if (activeDays.has(d.toISOString().slice(0, 10))) thisWeek++;
+  }
+
+  return { current, longest, thisWeek };
+}
+
 const AppContext = createContext<AppContextType | null>(null);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
@@ -75,17 +145,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [favoriteActivityIds, setFavorites] = useState<string[]>([]);
   const [masteredMilestones, setMastered] = useState<string[]>([]);
   const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
+  const [activityCompletions, setActivityCompletions] = useState<ActivityCompletion[]>([]);
 
   useEffect(() => {
     (async () => {
       try {
-        const [p, c, f, m, j, ob] = await Promise.all([
+        const [p, c, f, m, j, ob, ac] = await Promise.all([
           AsyncStorage.getItem("profile_v2"),
           AsyncStorage.getItem("completed"),
           AsyncStorage.getItem("favorites"),
           AsyncStorage.getItem("milestones"),
           AsyncStorage.getItem("journal"),
           AsyncStorage.getItem("onboarding_done"),
+          AsyncStorage.getItem("activity_completions"),
         ]);
         if (p) setProfile(JSON.parse(p));
         if (c) setCompleted(JSON.parse(c));
@@ -93,6 +165,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         if (m) setMastered(JSON.parse(m));
         if (j) setJournalEntries(JSON.parse(j));
         if (ob) setOnboardingDone(true);
+        if (ac) setActivityCompletions(JSON.parse(ac));
       } catch {}
     })();
   }, []);
@@ -119,6 +192,14 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setCompleted((prev) => {
       const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
       AsyncStorage.setItem("completed", JSON.stringify(next));
+      return next;
+    });
+    setActivityCompletions((prev) => {
+      const alreadyCompleted = prev.some((c) => c.activityId === id);
+      const next = alreadyCompleted
+        ? prev.filter((c) => c.activityId !== id)
+        : [...prev, { activityId: id, completedAt: new Date().toISOString() }];
+      AsyncStorage.setItem("activity_completions", JSON.stringify(next));
       return next;
     });
   }, []);
@@ -160,7 +241,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
-  const todayQuests = getDailyQuests(ageMonths);
+  const activeDaysSet = useMemo<ReadonlySet<string>>(() => {
+    const set = new Set<string>();
+    activityCompletions.forEach((c) => set.add(toDateKey(c.completedAt)));
+    return set;
+  }, [activityCompletions]);
+
+  const { current: currentStreak, longest: longestStreak, thisWeek: activeDaysThisWeek } =
+    useMemo(() => computeStreaks(activeDaysSet), [activeDaysSet]);
+
+  const todayQuests = useMemo(() => getDailyQuests(ageMonths), [ageMonths]);
 
   return (
     <AppContext.Provider
@@ -180,6 +270,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         journalEntries,
         addJournalEntry,
         deleteJournalEntry,
+        activityCompletions,
+        activeDaysSet,
+        currentStreak,
+        longestStreak,
+        activeDaysThisWeek,
       }}
     >
       {children}

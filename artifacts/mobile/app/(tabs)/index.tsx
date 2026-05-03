@@ -13,6 +13,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ActivityCard } from "@/components/ActivityCard";
+import { StreakCalendar } from "@/components/StreakCalendar";
 import { DAILY_RHYTHM, Pillar, PHASE_INFO, getPhaseForAge, PILLAR_LABELS } from "@/constants/data";
 import { useApp } from "@/context/AppContext";
 import { useColors } from "@/hooks/useColors";
@@ -51,7 +52,17 @@ function formatAge(ageMonths: number): string {
 export default function HomeScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const { profile, ageMonths, todayQuests, completedActivityIds, journalEntries } = useApp();
+  const {
+    profile,
+    ageMonths,
+    todayQuests,
+    completedActivityIds,
+    journalEntries,
+    activeDaysSet,
+    currentStreak,
+    longestStreak,
+    activeDaysThisWeek,
+  } = useApp();
   const router = useRouter();
 
   const completedToday = todayQuests.filter((a) => completedActivityIds.includes(a.id)).length;
@@ -147,6 +158,7 @@ export default function HomeScreen() {
           </View>
         )}
 
+        {/* Today's Quests */}
         <View style={styles.sectionHeader}>
           <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Today's Bonding Quests</Text>
           <View style={[styles.questBadge, { backgroundColor: colors.primary + "1a" }]}>
@@ -170,6 +182,25 @@ export default function HomeScreen() {
           </View>
         )}
 
+        {/* Streak Calendar */}
+        <View style={styles.sectionHeader}>
+          <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Habit Tracker</Text>
+          {currentStreak > 0 && (
+            <View style={[styles.streakBadge, { backgroundColor: "#e8713c18" }]}>
+              <Ionicons name="flame" size={13} color="#e8713c" />
+              <Text style={[styles.streakBadgeText, { color: "#e8713c" }]}>{currentStreak} day streak</Text>
+            </View>
+          )}
+        </View>
+
+        <StreakCalendar
+          activeDaysSet={activeDaysSet}
+          currentStreak={currentStreak}
+          longestStreak={longestStreak}
+          activeDaysThisWeek={activeDaysThisWeek}
+        />
+
+        {/* 5 Pillars */}
         <View style={styles.sectionHeader}>
           <Text style={[styles.sectionTitle, { color: colors.foreground }]}>5 Pillars Progress</Text>
         </View>
@@ -180,6 +211,7 @@ export default function HomeScreen() {
           ))}
         </View>
 
+        {/* Quick Actions */}
         <View style={styles.quickActions}>
           <Pressable
             onPress={() => router.push("/(tabs)/activities")}
@@ -217,7 +249,16 @@ const styles = StyleSheet.create({
   ageTag: { fontSize: 13, fontFamily: "Inter_600SemiBold" },
   profileButton: { width: 44, height: 44, borderRadius: 22, alignItems: "center", justifyContent: "center" },
   profileInitial: { color: "#fff", fontSize: 18, fontFamily: "Inter_700Bold" },
-  phaseCard: { padding: 14, borderRadius: 14, borderWidth: 1, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1 },
+  phaseCard: {
+    padding: 14,
+    borderRadius: 14,
+    borderWidth: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    elevation: 1,
+  },
   phaseCardHeader: { flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 4 },
   phaseDot: { width: 6, height: 6, borderRadius: 3 },
   phaseLabel: { fontSize: 11, fontFamily: "Inter_600SemiBold", letterSpacing: 0.5, textTransform: "uppercase" },
@@ -232,15 +273,41 @@ const styles = StyleSheet.create({
   nowLabel: { fontSize: 11, fontFamily: "Inter_600SemiBold", letterSpacing: 0.5, textTransform: "uppercase" },
   nowActivity: { fontSize: 15, fontFamily: "Inter_700Bold", marginBottom: 4, letterSpacing: -0.2 },
   nowNote: { fontSize: 12, fontFamily: "Inter_400Regular", lineHeight: 17, fontStyle: "italic" },
-  sectionHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12, marginTop: 4 },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 12,
+    marginTop: 4,
+  },
   sectionTitle: { fontSize: 20, fontFamily: "Inter_700Bold", letterSpacing: -0.4 },
   questBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
   questCount: { fontSize: 12, fontFamily: "Inter_700Bold" },
+  streakBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  streakBadgeText: { fontSize: 12, fontFamily: "Inter_700Bold" },
   progressBar: { height: 4, borderRadius: 2, marginBottom: 16, overflow: "hidden" },
   progressFill: { height: 4, borderRadius: 2 },
   emptyQuests: { padding: 20, borderRadius: 14, borderWidth: 1, alignItems: "center", marginBottom: 16 },
   emptyQuestsText: { fontSize: 13, fontFamily: "Inter_400Regular", textAlign: "center" },
-  pillarsCard: { padding: 16, borderRadius: 16, borderWidth: 1, gap: 12, marginBottom: 20, shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 4, elevation: 1 },
+  pillarsCard: {
+    padding: 16,
+    borderRadius: 16,
+    borderWidth: 1,
+    gap: 12,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    elevation: 1,
+  },
   pillarRow: { flexDirection: "row", alignItems: "center", gap: 8 },
   pillarDot: { width: 8, height: 8, borderRadius: 4 },
   pillarLabelContainer: { width: 115 },
