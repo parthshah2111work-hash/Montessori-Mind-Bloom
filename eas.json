@@ -12,6 +12,9 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "PNPM_VERSION": "9.1.0"
       }
     },
     "production": {
