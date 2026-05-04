@@ -9,13 +9,9 @@
   },
   "scripts": {
     "eas-build-pre-install": "npm install -g pnpm@9.1.0 && corepack enable && pnpm install --no-frozen-lockfile",
-    "preinstall": "sh -c 'rm -f package-lock.json yarn.lock; case \"$npm_config_user_agent\" in pnpm/*) ;; *) echo \"Use pnpm instead\" >&2; exit 1 ;; esac'",
     "android": "expo run:android",
     "ios": "expo run:ios",
-    "start": "expo start",
-    "build": "pnpm run typecheck && pnpm -r --if-present run build",
-    "typecheck:libs": "tsc --build",
-    "typecheck": "pnpm run typecheck:libs && pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
+    "start": "expo start"
   },
   "dependencies": {
     "expo": "~51.0.0",
@@ -26,9 +22,7 @@
   },
   "devDependencies": {
     "@types/react": "~18.2.79",
-    "@types/node": "^20.11.0",
-    "typescript": "~5.3.3",
-    "prettier": "^3.1.1"
+    "typescript": "~5.3.3"
   },
   "private": true
 }
