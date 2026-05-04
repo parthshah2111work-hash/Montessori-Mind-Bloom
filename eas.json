@@ -1,6 +1,6 @@
 {
   "cli": {
-    "version": ">= 5.0.0",
+    "version": ">= 18.9.1",
     "appVersionSource": "remote"
   },
   "build": {
@@ -10,7 +10,7 @@
         "buildType": "apk",
         "gradleCommand": ":app:assembleRelease --stacktrace --info"
       },
-      "node": "18.0.0"
+      "node": "20.11.0"
     }
   }
 }
