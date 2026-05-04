@@ -4,10 +4,10 @@
     "slug": "lumina-growth",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./artifacts/mobile/assets/images/icon.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./artifacts/mobile/assets/images/icon.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -18,14 +18,14 @@
     },
     "android": {
       "package": "com.parthshah.luminagrowth",
-      "versionCode": 5,
+      "versionCode": 4,
       "adaptiveIcon": {
-        "foregroundImage": "./artifacts/mobile/assets/images/icon.png",
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       }
     },
     "web": {
-      "favicon": "./artifacts/mobile/assets/images/icon.png"
+      "favicon": "./assets/icon.png"
     },
     "extra": {
       "eas": {
