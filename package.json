@@ -8,7 +8,7 @@
     "pnpm": ">=8"
   },
   "scripts": {
-    eas-build-pre-install": "corepack enable && pnpm install --no-frozen-lockfile",
+    "eas-build-pre-install": "corepack enable && pnpm install --no-frozen-lockfile",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "start": "expo start"
