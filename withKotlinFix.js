@@ -4,11 +4,14 @@ const {
 } = require("@expo/config-plugins");
 
 module.exports = (config) => {
-  // Fix 1: Root build.gradle (Kotlin Version)
+  // Fix 1: Force Kotlin Version in Root build.gradle
   config = withProjectBuildGradle(config, (config) => {
     if (config.modResults.language === "groovy") {
       let content = config.modResults.contents;
-      // Force Kotlin 2.1.20
+      content = content.replace(
+        /kotlinVersion\s*=\s*['"][^'"]*['"]/g,
+        "kotlinVersion = '2.1.20'",
+      );
       if (!content.includes("kotlinVersion = '2.1.20'")) {
         content = content.replace(
           /buildscript\s*{/,
@@ -21,15 +24,12 @@ module.exports = (config) => {
     return config;
   });
 
-  // Fix 2: App build.gradle (Line 96: Remove obsolete property)
+  // Fix 2: THE CRITICAL ONE - Purge Line 93 from app/build.gradle
   config = withAppBuildGradle(config, (config) => {
     if (config.modResults.language === "groovy") {
       let content = config.modResults.contents;
-      // Remove 'enableBundleCompression' completely to satisfy RN 0.76
-      content = content.replace(
-        /enableBundleCompression\s*=\s*(true|false)/g,
-        "",
-      );
+      // This regex finds the enableBundleCompression line regardless of spaces/values and deletes it
+      content = content.replace(/enableBundleCompression\s*=\s*.*?\n/g, "\n");
       config.modResults.contents = content;
     }
     return config;
