@@ -6,13 +6,13 @@
     "plugins": [
       "./withKotlinFix.js",
       "expo-router"
-    ],
-    "android": {
-      "package": "com.parthshah.luminagrowth",
+    ],      "package": "com.parthshah.luminagrowth",
       "versionCode": 18,
+      "gradleCommand": ":app:assembleRelease",
+      "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#ffffff"dColor": "#ffffff"
       }
     },
     "extra": {
