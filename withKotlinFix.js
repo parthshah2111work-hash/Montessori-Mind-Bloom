@@ -5,7 +5,8 @@ module.exports = (config) => {
     if (config.modResults.language === "groovy") {
       let content = config.modResults.contents;
 
-      // The "Ultimate Force": Locate the buildscript and inject kotlinVersion globally
+      // Force Kotlin 2.1.20 into the top-level ext block
+      // This solves the "unknown property" error at Line 11/72
       if (!content.includes("kotlinVersion = '2.1.20'")) {
         content = content.replace(
           /buildscript\s*{/,
@@ -13,7 +14,7 @@ module.exports = (config) => {
         );
       }
 
-      // Safety check: remove any 1.9.24 "ghosts"
+      // Wipe out any reference to the old 1.9.24 version
       content = content.replace(/1\.9\.24/g, "2.1.20");
 
       config.modResults.contents = content;
