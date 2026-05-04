@@ -19,6 +19,7 @@
     "android": {
       "package": "com.parthshah.luminagrowth",
       "versionCode": 18,
+      "kotlinVersion": "2.0.21",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
