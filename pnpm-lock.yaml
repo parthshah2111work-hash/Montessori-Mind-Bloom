@@ -12,14 +12,11 @@ importers:
         specifier: ^1.51.0
         version: 1.51.0
       '@tanstack/react-query':
-        specifier: ^5.62.0
+        specifier: ^5.100.9
         version: 5.100.9(react@18.3.1)
       expo:
         specifier: ~54.0.27
         version: 54.0.34(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.3(@babel/core@7.29.0))(@types/react@18.3.28)(react@18.3.1))(react@18.3.1)(typescript@5.3.3)
-      expo-constants:
-        specifier: ~18.0.11
-        version: 18.0.13(expo@54.0.34(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.23)(react-native@0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.3(@babel/core@7.29.0))(@types/react@18.3.28)(react@18.3.1))(react@18.3.1)(typescript@5.3.3))(react-native@0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.3(@babel/core@7.29.0))(@types/react@18.3.28)(react@18.3.1))
       expo-linking:
         specifier: ~8.0.10
         version: 8.0.12(expo@54.0.34)(react-native@0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.3(@babel/core@7.29.0))(@types/react@18.3.28)(react@18.3.1))(react@18.3.1)
@@ -57,7 +54,7 @@ importers:
         specifier: 1.6.3
         version: 1.6.3(react-native@0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.3(@babel/core@7.29.0))(@types/react@18.3.28)(react@18.3.1))(react@18.3.1)
       zod:
-        specifier: ^3.23.8
+        specifier: ^3.25.7
         version: 3.25.76
     devDependencies:
       '@types/react':
