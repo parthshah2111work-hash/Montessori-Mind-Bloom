@@ -10,7 +10,10 @@
         "buildType": "apk",
         "gradleCommand": ":app:assembleRelease --stacktrace --info"
       },
-      "node": "20.11.0"
+      "node": "20.11.0",
+      "env": {
+        "KOTLIN_VERSION": "1.9.24"
+      }
     }
   }
 }
