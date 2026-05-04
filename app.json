@@ -18,7 +18,7 @@
     },
     "android": {
       "package": "com.parthshah.luminagrowth",
-      "versionCode": 17,
+      "versionCode": 18,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
@@ -28,7 +28,7 @@
       "favicon": "./assets/images/icon.png",
       "bundler": "metro"
     },
-    "plugins": ["expo-router", "react-native-reanimated"],
+    "plugins": ["expo-router"],
     "experiments": {
       "typedRoutes": true
     },
