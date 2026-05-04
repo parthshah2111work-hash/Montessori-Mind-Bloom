@@ -3,11 +3,7 @@
     "name": "Lumina Growth",
     "slug": "lumina-growth",
     "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
-    "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+    "plugins": ["expo-router", "./withKotlinFix.js"],
     "android": {
       "package": "com.parthshah.luminagrowth",
       "versionCode": 18,
@@ -15,17 +11,6 @@
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       }
-    },
-    "plugins": [
-      "expo-router",
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "kotlinVersion": "2.1.20"
-          }
-        }
-      ]
-    ]
+    }
   }
 }
