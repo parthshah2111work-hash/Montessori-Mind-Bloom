@@ -4,10 +4,10 @@
     "slug": "lumina-growth",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./artifacts/mobile/assets/images/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/images/icon.png",
+      "image": "./artifacts/mobile/assets/images/icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -20,7 +20,7 @@
       "package": "com.parthshah.luminagrowth",
       "versionCode": 5,
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/icon.png",
+        "foregroundImage": "./artifacts/mobile/assets/images/icon.png",
         "backgroundColor": "#ffffff"
       }
     },

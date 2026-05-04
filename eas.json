@@ -4,6 +4,17 @@
     "appVersionSource": "remote"
   },
   "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "node": "20.11.0"
+    },
     "production": {
       "autoIncrement": true,
       "android": {
@@ -11,5 +22,8 @@
       },
       "node": "20.11.0"
     }
+  },
+  "submit": {
+    "production": {}
   }
 }
