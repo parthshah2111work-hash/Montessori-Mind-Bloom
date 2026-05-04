@@ -5,19 +5,16 @@ module.exports = (config) => {
     if (config.modResults.language === "groovy") {
       let content = config.modResults.contents;
 
-      // Force Kotlin 2.1.20 in the ext block
-      content = content.replace(
-        /kotlinVersion\s*=\s*['"][^'"]*['"]/g,
-        "kotlinVersion = '2.1.20'",
-      );
-
-      // Force all other references to 2.1.20
-      if (!content.includes("kotlinVersion =")) {
+      // The "Ultimate Force": Locate the buildscript and inject kotlinVersion globally
+      if (!content.includes("kotlinVersion = '2.1.20'")) {
         content = content.replace(
-          /ext\s*{/,
-          "ext {\n        kotlinVersion = '2.1.20'",
+          /buildscript\s*{/,
+          "buildscript {\n    ext.kotlinVersion = '2.1.20'",
         );
       }
+
+      // Safety check: remove any 1.9.24 "ghosts"
+      content = content.replace(/1\.9\.24/g, "2.1.20");
 
       config.modResults.contents = content;
     }
