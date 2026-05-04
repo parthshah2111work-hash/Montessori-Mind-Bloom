@@ -19,7 +19,7 @@
     "android": {
       "package": "com.parthshah.luminagrowth",
       "versionCode": 18,
-      "kotlinVersion": "2.0.21",
+      "kotlinVersion": "2.1.20",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
@@ -29,7 +29,17 @@
       "favicon": "./assets/images/icon.png",
       "bundler": "metro"
     },
-    "plugins": ["expo-router"],
+    "plugins": [
+      "expo-router",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "2.1.20"
+          }
+        }
+      ]
+    ],
     "experiments": {
       "typedRoutes": true
     },
