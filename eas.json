@@ -6,7 +6,7 @@
   "build": {
     "production": {
       "env": {
-        "KOTLIN_VERSION": "1.9.24"
+        "KOTLIN_VERSION": "2.0.21"
       },
       "android": {
         "buildType": "apk"
