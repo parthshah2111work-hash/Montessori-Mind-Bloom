@@ -1,9 +1,7 @@
 {
   "cli": {
     "version": ">= 18.9.1",
-    "appVersionSource": "remote",
-    "appDir": ".",
-    "nodeModulesRoot": "."
+    "appVersionSource": "remote"
   },
   "build": {
     "development": {
