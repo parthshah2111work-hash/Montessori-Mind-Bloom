@@ -8,6 +8,7 @@ module.exports = (config) => {
   config = withProjectBuildGradle(config, (config) => {
     if (config.modResults.language === "groovy") {
       let content = config.modResults.contents;
+      // Force Kotlin 2.1.20
       if (!content.includes("kotlinVersion = '2.1.20'")) {
         content = content.replace(
           /buildscript\s*{/,
@@ -20,11 +21,11 @@ module.exports = (config) => {
     return config;
   });
 
-  // Fix 2: App build.gradle (Remove obsolete enableBundleCompression)
+  // Fix 2: App build.gradle (Line 96: Remove obsolete property)
   config = withAppBuildGradle(config, (config) => {
     if (config.modResults.language === "groovy") {
       let content = config.modResults.contents;
-      // Remove the line causing the Line 98 error
+      // Remove 'enableBundleCompression' completely to satisfy RN 0.76
       content = content.replace(
         /enableBundleCompression\s*=\s*(true|false)/g,
         "",
