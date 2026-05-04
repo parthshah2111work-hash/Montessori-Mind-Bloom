@@ -16,12 +16,8 @@
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       }
-    }
-  }
-}    }
     },
     "extra": {
-      "router": {},
       "eas": {
         "projectId": "5da4fd78-93cd-4509-8da0-b630d8ea64c6"
       }
