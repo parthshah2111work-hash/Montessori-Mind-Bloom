@@ -3,7 +3,18 @@
     "name": "Lumina Growth",
     "slug": "lumina-growth",
     "version": "1.0.0",
-    "plugins": ["expo-router", "./withKotlinFix.js"],
+    "plugins": [
+      "expo-router",
+      "./withKotlinFix.js",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "2.1.20"
+          }
+        }
+      ]
+    ],
     "android": {
       "package": "com.parthshah.luminagrowth",
       "versionCode": 18,
