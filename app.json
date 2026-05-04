@@ -3,22 +3,13 @@
     "name": "Lumina Growth",
     "slug": "lumina-growth",
     "version": "1.0.0",
-    "plugins": [
-      "./withKotlinFix.js",
-      "expo-router"
-    ],
+    "plugins": ["./withKotlinFix.js", "expo-router"],
     "android": {
       "package": "com.parthshah.luminagrowth",
       "versionCode": 18,
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
-      }
-    },
-    "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "5da4fd78-93cd-4509-8da0-b630d8ea64c6"
       }
     }
   }
