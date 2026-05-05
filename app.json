@@ -4,6 +4,14 @@
     "slug": "lumina-growth",
     "version": "1.0.0",
     "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "2.1.0"
+          }
+        }
+      ],
       "./withKotlinFix.js",
       "expo-router"
     ],
