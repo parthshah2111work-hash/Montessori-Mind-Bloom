@@ -8,7 +8,7 @@
       "node": "20.18.0",
       "env": {
         "NODE_OPTIONS": "--max-old-space-size=4096",
-        "KOTLIN_VERSION": "2.1.0"
+        "KOTLIN_VERSION": "1.9.24"
       },
       "android": {
         "buildType": "app-bundle"

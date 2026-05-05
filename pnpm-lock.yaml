@@ -60,8 +60,8 @@ importers:
         specifier: 15.12.1
         version: 15.12.1(react-native@0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.3(@babel/core@7.29.0))(@types/react@18.3.28)(react@18.3.1))(react@18.3.1)
       react-native-worklets-core:
-        specifier: 1.6.1
-        version: 1.6.1(react-native@0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.3(@babel/core@7.29.0))(@types/react@18.3.28)(react@18.3.1))(react@18.3.1)
+        specifier: 1.6.3
+        version: 1.6.3(react-native@0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.3(@babel/core@7.29.0))(@types/react@18.3.28)(react@18.3.1))(react@18.3.1)
       zod:
         specifier: ^3.25.7
         version: 3.25.76
@@ -3180,8 +3180,8 @@ packages:
       react: '*'
       react-native: '*'
 
-  react-native-worklets-core@1.6.1:
-    resolution: {integrity: sha512-cMRlVGbqNqNlF2r5j8gzflCbCrxFRQVq4k8xJJXFQONt3eeCrO5v3g15FFL1H2oTA+alevXbzD4yCV7ZPbwahQ==}
+  react-native-worklets-core@1.6.3:
+    resolution: {integrity: sha512-r3Q40XQBccx/iAI5tlyiua+micvO1UGzzUOskNweZUXyfrrE+rb5aqxqruBPqXf90rO+bBiplylLMEAXCLTyGA==}
     peerDependencies:
       react: '*'
       react-native: '*'
@@ -7735,7 +7735,7 @@ snapshots:
       react-native: 0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.3(@babel/core@7.29.0))(@types/react@18.3.28)(react@18.3.1)
       warn-once: 0.1.1
 
-  react-native-worklets-core@1.6.1(react-native@0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.3(@babel/core@7.29.0))(@types/react@18.3.28)(react@18.3.1))(react@18.3.1):
+  react-native-worklets-core@1.6.3(react-native@0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.3(@babel/core@7.29.0))(@types/react@18.3.28)(react@18.3.1))(react@18.3.1):
     dependencies:
       react: 18.3.1
       react-native: 0.76.0(@babel/core@7.29.0)(@babel/preset-env@7.29.3(@babel/core@7.29.0))(@types/react@18.3.28)(react@18.3.1)

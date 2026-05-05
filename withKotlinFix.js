@@ -4,10 +4,10 @@ module.exports = (config) => {
   config = withProjectBuildGradle(config, (config) => {
     if (config.modResults.language === "groovy") {
       let content = config.modResults.contents;
-      // Overwrite the actual plugin classpath to 2.1.0
+      content = content.replace(/kotlinVersion\s*=\s*['"].*?['"]/g, "kotlinVersion = '1.9.24'");
       content = content.replace(
         /classpath\s*['"]org\.jetbrains\.kotlin:kotlin-gradle-plugin:.*?['"]/g,
-        "classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.0'"
+        "classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.24'"
       );
       config.modResults.contents = content;
     }
@@ -29,9 +29,9 @@ module.exports = (config) => {
         const resolutionFix = `
     configurations.all {
         resolutionStrategy {
-            force "org.jetbrains.kotlin:kotlin-stdlib:2.1.0"
-            force "org.jetbrains.kotlin:kotlin-compiler-embeddable:2.1.0"
-            force "com.google.devtools.ksp:symbol-processing-api:2.1.0-1.0.29"
+            force "org.jetbrains.kotlin:kotlin-stdlib:1.9.24"
+            force "org.jetbrains.kotlin:kotlin-compiler-embeddable:1.9.24"
+            force "com.google.devtools.ksp:symbol-processing-api:1.9.24-1.0.20"
         }
     }
 `;
@@ -42,4 +42,4 @@ module.exports = (config) => {
     return config;
   });
   return config;
-}
+};
