@@ -35,8 +35,15 @@ module.exports = (config) => {
         }
     }
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-        kotlinOptions.freeCompilerArgs += ["-Xexpect-actual-classes"]
+    kotlinOptions {
+        freeCompilerArgs += [
+            "-Xexpect-actual-classes",
+            "-Xskip-metadata-version-check",
+            "-Xno-call-assertions",
+            "-Xno-receiver-assertions"
+        ]
     }
+}
 `;
         content = content.replace("android {", "android {" + resolutionFix);
       }
