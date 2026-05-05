@@ -23,7 +23,8 @@ module.exports = (config) => {
       const propertiesToPurge = [
         /enableBundleCompression\s*=\s*.*?\n/g,
         /preloadedNativeModules\s*=\s*.*?\n/g,
-        /hermesEnabled\s*=\s*.*?\n/g
+        /hermesEnabled\s*=\s*.*?\n/g,
+        /apply\s+from:\s+.*fix-prefab\.gradle.*\n/g
       ];
 
       propertiesToPurge.forEach(regex => {
