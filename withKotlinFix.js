@@ -1,4 +1,6 @@
 const { withProjectBuildGradle, withAppBuildGradle } = require("@expo/config-plugins");
+const fs = require('fs');
+const path = require('path');
 
 module.exports = (config) => {
   config = withProjectBuildGradle(config, (config) => {
@@ -15,14 +17,7 @@ module.exports = (config) => {
   config = withAppBuildGradle(config, (config) => {
     if (config.modResults.language === "groovy") {
       let content = config.modResults.contents;
-
-      const propertiesToPurge = [
-        /enableBundleCompression\s*=\s*.*?\n/g,
-        /preloadedNativeModules\s*=\s*.*?\n/g,
-        /hermesEnabled\s*=\s*.*?\n/g,
-        /newArchEnabled\s*=\s*.*?\n/g, // Proactive: remove conflicting Arch flags
-        /apply\s+from:\s+.*fix-prefab\.gradle.*\n/g 
-      ];
+      const propertiesToPurge = [/enableBundleCompression\s*=\s*.*?\n/g, /hermesEnabled\s*=\s*.*?\n/g, /apply\s+from:\s+.*fix-prefab\.gradle.*\n/g];
       propertiesToPurge.forEach((regex) => { content = content.replace(regex, ""); });
 
       if (content.includes("android {")) {
@@ -35,15 +30,10 @@ module.exports = (config) => {
         }
     }
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
-    kotlinOptions {
-        freeCompilerArgs += [
-            "-Xexpect-actual-classes",
-            "-Xskip-metadata-version-check",
-            "-Xno-call-assertions",
-            "-Xno-receiver-assertions"
-        ]
+        kotlinOptions {
+            freeCompilerArgs += ["-Xexpect-actual-classes", "-Xskip-metadata-version-check"]
+        }
     }
-}
 `;
         content = content.replace("android {", "android {" + resolutionFix);
       }
