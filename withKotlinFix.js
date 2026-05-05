@@ -4,15 +4,15 @@ const {
 } = require("@expo/config-plugins");
 
 module.exports = (config) => {
-  // 1. ROOT FIX: Force the 2.1.0 Plugin and Compiler
+  // 1. ROOT FIX: Syncing the Plugin with our KOTLIN_VERSION env var
   config = withProjectBuildGradle(config, (config) => {
     if (config.modResults.language === "groovy") {
       let content = config.modResults.contents;
 
-      // Update variables
+      // Force variables to 2.1.0
       content = content.replace(/kotlinVersion\s*=\s*['"].*?['"]/g, "kotlinVersion = '2.1.0'");
 
-      // CRITICAL: Overwrite the actual plugin classpath to 2.1.0
+      // Overwrite the actual plugin classpath
       content = content.replace(
         /classpath\s*['"]org\.jetbrains\.kotlin:kotlin-gradle-plugin:.*?['"]/g,
         "classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.0'"
@@ -23,7 +23,7 @@ module.exports = (config) => {
     return config;
   });
 
-  // 2. APP FIX: Quadruple Purge + Resolution Strategy
+  // 2. APP FIX: The "Tighter" Quadruple Purge
   config = withAppBuildGradle(config, (config) => {
     if (config.modResults.language === "groovy") {
       let content = config.modResults.contents;
@@ -35,10 +35,12 @@ module.exports = (config) => {
         /apply\s+from:\s+.*fix-prefab\.gradle.*\n/g 
       ];
 
+      // We use a clean empty string here to ensure NO ghost properties remain
       propertiesToPurge.forEach((regex) => {
-        content = content.replace(regex, "\n");
+        content = content.replace(regex, ""); 
       });
 
+      // 3. ENFORCE STABLE RESOLUTION
       if (content.includes("android {")) {
         const resolutionFix = `
     configurations.all {
