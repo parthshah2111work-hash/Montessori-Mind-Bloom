@@ -31,7 +31,12 @@ module.exports = (config) => {
     }
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
         kotlinOptions {
-            freeCompilerArgs += ["-Xexpect-actual-classes", "-Xskip-metadata-version-check"]
+            freeCompilerArgs += [
+            "-Xexpect-actual-classes", 
+            "-Xskip-metadata-version-check",
+            "-Xsuppress-version-warnings",
+            "-P", "plugin:org.jetbrains.kotlin.parcelize:additionalAnnotation=expo.modules.kotlin.apidels.Parcelize"
+            ]
         }
     }
 `;
