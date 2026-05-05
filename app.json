@@ -9,7 +9,7 @@
         "expo-build-properties",
         {
           "android": {
-            "kotlinVersion": "2.0.20"
+            "kotlinVersion": "2.0.20",
             "newArchEnabled": false
           }
         }
@@ -20,7 +20,6 @@
     "android": {
       "package": "com.parthshah.luminagrowth",
       "versionCode": 18,
-      "gradleCommand": ":app:assembleRelease",
       "softwareKeyboardLayoutMode": "pan",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/icon.png",
