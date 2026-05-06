@@ -35,7 +35,8 @@ module.exports = (config) => {
                 "-Xskip-metadata-version-check",
                 "-Xsuppress-version-warnings",
                 "-Xno-call-assertions",
-                "-Xno-receiver-assertions"
+                "-Xno-receiver-assertions",
+                "-Xcontext-receivers"
             ]
         }
     }

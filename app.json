@@ -10,7 +10,8 @@
         {
           "android": {
             "kotlinVersion": "2.0.0",
-            "newArchEnabled": false
+            "newArchEnabled": false,
+            "bridgeless": false
           }
         }
       ],
