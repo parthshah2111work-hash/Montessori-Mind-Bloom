@@ -33,10 +33,7 @@ module.exports = (config) => {
             freeCompilerArgs += [
                 "-Xexpect-actual-classes",
                 "-Xskip-metadata-version-check",
-                "-Xsuppress-version-warnings",
-                "-Xno-call-assertions",
-                "-Xno-receiver-assertions",
-                "-Xcontext-receivers"
+                "-Xsuppress-version-warnings"
             ]
         }
     }
