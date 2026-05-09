@@ -6,8 +6,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useColors } from '@/hooks/useColors';
-import { useProfile } from '../context/ProfileContext';
-import { useHealth } from '../context/AppContext';
+import { useProfile, useHealth } from '../context/AppContext';
 import { GoogleGenerativeAI } from "@google/genai";
 
 // Initialize AI
