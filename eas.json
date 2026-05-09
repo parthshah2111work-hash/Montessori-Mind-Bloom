@@ -15,6 +15,9 @@
       "node": "20.18.0",
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_GEMINI_API_KEY": "AIzaSyC_dqsAbtyzN-I4wioUTTCNIIBmcTG4lrQ"
       }
     }
   }
