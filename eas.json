@@ -6,11 +6,6 @@
   "build": {
     "production": {
       "node": "20.18.0",
-      "env": {
-        "NODE_OPTIONS": "--max-old-space-size=4096",
-        "KOTLIN_VERSION": "2.0.20",
-        "EXPO_USE_NEW_ARCH": "0"
-      },
       "android": {
         "buildType": "apk"
       }

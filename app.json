@@ -3,19 +3,7 @@
     "name": "Lumina Growth",
     "slug": "lumina-growth",
     "version": "1.0.0",
-    "newArchEnabled": false,
     "plugins": [
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "kotlinVersion": "2.0.0",
-            "newArchEnabled": false,
-            "bridgeless": false
-          }
-        }
-      ],
-      "./withKotlinFix.js",
       "expo-router"
     ],
     "android": {
