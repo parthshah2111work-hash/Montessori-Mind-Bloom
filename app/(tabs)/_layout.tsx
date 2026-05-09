@@ -3,15 +3,12 @@ import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Platform, StyleSheet, View, useColorScheme } from "react-native";
-
 import { useColors } from "@/hooks/useColors";
 
 export default function TabLayout() {
   const colors = useColors();
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
-  const isIOS = Platform.OS === "ios";
-  const isWeb = Platform.OS === "web";
 
   return (
     <Tabs
@@ -21,29 +18,44 @@ export default function TabLayout() {
         headerShown: false,
         tabBarStyle: {
           position: "absolute",
-          backgroundColor: isIOS ? "transparent" : colors.background,
-          borderTopWidth: 1,
-          borderTopColor: colors.border,
-          elevation: 0,
-          ...(isWeb ? { height: 84 } : {}),
+          // Floating Island Graphics
+          bottom: Platform.OS === 'android' ? 15 : 25,
+          left: 15,
+          right: 15,
+          borderRadius: 25,
+          height: 65,
+          // Glass-morphism logic
+          backgroundColor: isDark ? "rgba(20,20,20,0.75)" : "rgba(255,255,255,0.75)",
+          borderTopWidth: 0,
+          elevation: 12, // Deep shadow for Android
+          shadowColor: "#000",
+          shadowOffset: { width: 0, height: 6 },
+          shadowOpacity: 0.15,
+          shadowRadius: 12,
+          paddingBottom: 0,
         },
-        tabBarBackground: () =>
-          isIOS ? (
-            <BlurView
-              intensity={100}
-              tint={isDark ? "dark" : "systemChromeMaterial"}
-              style={StyleSheet.absoluteFill}
-            />
-          ) : isWeb ? (
-            <View style={[StyleSheet.absoluteFill, { backgroundColor: colors.background }]} />
-          ) : null,
+        tabBarBackground: () => (
+          <BlurView
+            intensity={90}
+            tint={isDark ? "dark" : "light"}
+            style={{ 
+              ...StyleSheet.absoluteFillObject, 
+              borderRadius: 25, 
+              overflow: 'hidden' 
+            }}
+          />
+        ),
         tabBarLabelStyle: {
           fontSize: 10,
           fontFamily: "Inter_600SemiBold",
-          marginBottom: isWeb ? 12 : 0,
+          marginBottom: 8,
         },
+        tabBarIconStyle: {
+          marginTop: 8,
+        }
       }}
     >
+      {/* 1. HOME */}
       <Tabs.Screen
         name="index"
         options={{
@@ -53,69 +65,55 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tabs.Screen
-        name="activities"
-        options={{
-          title: "Activities",
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? "rocket" : "rocket-outline"} size={22} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="trends"
-        options={{
-          title: "Trends",
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? "trending-up" : "trending-up-outline"} size={22} color={color} />
-          ),
-        }}
-      />
+
+      {/* 2. MILESTONES (Promoted to Main Bar) */}
       <Tabs.Screen
         name="milestones"
         options={{
           title: "Milestones",
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? "checkmark-circle" : "checkmark-circle-outline"} size={22} color={color} />
+            <Ionicons name={focused ? "star" : "star-outline"} size={22} color={color} />
           ),
         }}
       />
+
+      {/* 3. ACTIVITIES */}
       <Tabs.Screen
-        name="nutrition"
+        name="activities"
         options={{
-          title: "Nutrition",
+          title: "Play",
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? "restaurant" : "restaurant-outline"} size={22} color={color} />
+            <Ionicons name={focused ? "extension-puzzle" : "extension-puzzle-outline"} size={22} color={color} />
           ),
         }}
       />
+
+      {/* 4. HEALTH */}
       <Tabs.Screen
         name="health"
         options={{
           title: "Health",
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? "medical" : "medical-outline"} size={22} color={color} />
+            <Ionicons name={focused ? "heart-half" : "heart-outline"} size={22} color={color} />
           ),
         }}
       />
-      <Tabs.Screen
-        name="journal"
-        options={{
-          title: "Journal",
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? "book" : "book-outline"} size={22} color={color} />
-          ),
-        }}
-      />
+
+      {/* 5. MORE (The Hub for Journal, Nutrition, Trends, and Profile) */}
       <Tabs.Screen
         name="profile"
         options={{
-          title: "Profile",
+          title: "More",
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? "person-circle" : "person-circle-outline"} size={22} color={color} />
+            <Ionicons name={focused ? "apps" : "apps-outline"} size={22} color={color} />
           ),
         }}
       />
+
+      {/* --- HIDDEN FROM NAV BAR --- */}
+      <Tabs.Screen name="nutrition" options={{ href: null }} />
+      <Tabs.Screen name="journal" options={{ href: null }} />
+      <Tabs.Screen name="trends" options={{ href: null }} />
     </Tabs>
   );
 }
