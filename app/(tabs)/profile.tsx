@@ -7,7 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { BlurView } from 'expo-blur';
 import { useColors } from '@/hooks/useColors';
-import { useProfile } from '../../context/ProfileContext';
+import { useProfile } from '../../context/AppContext';
 
 export default function MoreHubScreen() {
   const colors = useColors();
