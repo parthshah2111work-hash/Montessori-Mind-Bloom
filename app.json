@@ -4,7 +4,8 @@
     "slug": "lumina-growth",
     "version": "1.0.0",
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-web-browser"
     ],
     "android": {
       "package": "com.parthshah.luminagrowth",
